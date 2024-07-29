@@ -5,6 +5,8 @@ qShop is a customizable shop plugin for Minecraft servers, providing a flexible 
 
 ## Installation
 
+[![](https://jitpack.io/v/m7wq/qShop.svg)](https://jitpack.io/#m7wq/qShop)
+
 ### Maven
 
 Add the following repository and dependency to your `pom.xml`:
