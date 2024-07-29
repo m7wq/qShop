@@ -155,7 +155,7 @@ public class ShopGuiCommandExecutor implements CommandExecutor {
     private ShopAdapter getShopAdapterByName(String shopName) {
         // Implement logic to retrieve the ShopAdapter instance by its name
         // This could involve looking up a map or a database of registered shops
-        return null; // Placeholder for actual implementation
+        return new ShopManager(); // Placeholder for actual implementation
     }
 }
 ```
