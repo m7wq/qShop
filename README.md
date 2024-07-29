@@ -74,7 +74,7 @@ To create a custom shop, implement the `ShopAdapter` interface. This interface d
 #### Example Implementation
 
 ```java
-public class ShopManager implements ShopAdapter {
+public class MyCustomShop implements ShopAdapter {
 
     @Override
     public @NotNull Contents getContents() {
