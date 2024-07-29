@@ -78,7 +78,7 @@ public class MyCustomShop implements ShopAdapter {
 
     @Override
     public @NotNull Contents getContents() {
-        Item item1 = new Item(new ItemStack(Material.DIAMOND_SWORD), 0, 1000);
+        Item item1 = new Item(createItem("ItemStack", Arrays.asList("Line1","Line2"), Material.DIAMOND, Enchantment.ARROW_DAMAGE, 1, Enchantment.DAMAGE_ALL, 2) , 0, 1000); // Utility method
         Item item2 = new Item(new ItemStack(Material.GOLDEN_APPLE), 1, 500);
         Item item3 = new Item(new ItemStack(Material.ELYTRA), 2, 2000);
         return Contents.of(new Item[]{item1, item2, item3});
