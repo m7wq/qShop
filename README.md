@@ -46,7 +46,7 @@ dependencies {
 
 ## Setting Up in the Main Class
 
-In your plugin's main class, use the `qShopAPI` to set up the shop and handle purchases.
+In your plugin's main class, you got to initialize and load the API.
 
 ### Example Implementation
 ```java
