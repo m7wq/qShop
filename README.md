@@ -1,7 +1,7 @@
 
 # qShop
 
-qShop is a customizable shop plugin for Minecraft servers, providing a flexible API for developers to create in-game shops with various currencies and features.
+qShop is a customizable shop plugin for Minecraft servers with a flexible API for various in-game shops.
 
 ## Installation
 
@@ -9,7 +9,7 @@ qShop is a customizable shop plugin for Minecraft servers, providing a flexible 
 
 ### Maven
 
-Add the following repository and dependency to your `pom.xml`:
+Add this to your `pom.xml`:
 
 ```xml
 <repositories>
@@ -22,13 +22,13 @@ Add the following repository and dependency to your `pom.xml`:
 <dependency>
     <groupId>com.github.m7wq</groupId>
     <artifactId>qShop</artifactId>
-    <version>1.0v</version>
+    <version>VERSION</version>
 </dependency>
 ```
 
 ### Gradle
 
-Add the following to your `build.gradle`:
+Add this to your `build.gradle`:
 
 ```gradle
 dependencyResolutionManagement {
@@ -46,11 +46,10 @@ dependencies {
 
 ## Usage
 
-## Setting Up in the Main Class
+### Setup in Main Class
 
-In your plugin's main class, you got to initialize and load the API.
+Initialize and load the API in your plugin's main class:
 
-### Example Implementation
 ```java
 public class MyPlugin extends JavaPlugin {
 
@@ -58,32 +57,25 @@ public class MyPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Initialize qShopAPI with your custom messages
-        Messager messager = new Messager().of("&aPurchase successful!", "&cYou don't have enough balance!");
+        Messager messager = new Messager().of("&aPurchase successful!", "&cInsufficient balance!");
         qShopAPI.getInstance().load(messager);
-
-  
     }
-
-
 }
 ```
 
-### Implementing the `ShopAdapter`
+### Implementing `ShopAdapter`
 
-To create a custom shop, implement the `ShopAdapter` interface. This interface defines the methods required to set up your shop's contents, title, size, and item lore.
-
-#### Example Implementation
+Create a custom shop by implementing `ShopAdapter`:
 
 ```java
 public class MyCustomShop implements ShopAdapter {
 
     @Override
     public @NotNull Contents getContents() {
-        Item item1 = new Item(createItem("ItemStack", Arrays.asList("Line1","Line2"), Material.DIAMOND, Enchantment.ARROW_DAMAGE, 1, Enchantment.DAMAGE_ALL, 2) , 0, 1000); // Utility method
-        Item item2 = new Item(createItem("ItemStack", null, Material.DIAMOND, Enchantment.ARROW_DAMAGE, 1, Enchantment.DAMAGE_ALL, 2), 1, 500); // To use ShopAdapter lore
-        Item item3 = new Item(new ItemStack(Material.ELYTRA), 2, 2000);
-        return Contents.of(new Item[]{item1, item2, item3});
+        return Contents.of(
+            new Item(createItem("ItemStack", Arrays.asList("Line1", "Line2"), Material.DIAMOND), 0, 1000),
+            new Item(new ItemStack(Material.ELYTRA), 2, 2000)
+        );
     }
 
     @Override
@@ -93,27 +85,26 @@ public class MyCustomShop implements ShopAdapter {
 
     @Override
     public @NotNull Integer getSize() {
-        return 9; // Inventory size should be one of the allowed values
+        return 9; // Inventory size
     }
 
     @Override
     public Lore getLore() {
-        return new Lore().of(Arrays.asList("&aBuy this item for %cost% coins!"));
+        return new Lore().of(Arrays.asList("&aBuy this for %cost% coins!"));
     }
 
     @Override
     public @NotNull Lore getDefaultLore() {
-        return new Lore().of(Arrays.asList("&bThis item was purchased!"));
+        return new Lore().of(Arrays.asList("&bItem purchased!"));
     }
 
     @Override
     public void removeBalance(Player player, int amount) {
-        // Implement your balance removal logic
+        // Implement balance removal
     }
 
     @Override
     public int getBalance(Player player) {
-        // Implement your balance checking logic
         return 1000; // Example balance
     }
 }
@@ -121,9 +112,7 @@ public class MyCustomShop implements ShopAdapter {
 
 ### Using `handleShopGui`
 
-To create and open a shop GUI for a player, use the `handleShopGui` method from `qShopAPI`. This method configures the inventory based on the `ShopAdapter` implementation.
-
-#### Example Command Executor
+Create and open a shop GUI with:
 
 ```java
 public class ShopGuiCommandExecutor implements CommandExecutor {
@@ -131,18 +120,17 @@ public class ShopGuiCommandExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("This command can only be executed by a player.");
+            sender.sendMessage("Players only!");
             return false;
         }
 
         Player player = (Player) sender;
         if (args.length < 1) {
-            player.sendMessage("Please specify the shop name.");
+            player.sendMessage("Specify shop name.");
             return false;
         }
 
-        String shopName = args[0];
-        ShopAdapter shopAdapter = getShopAdapterByName(shopName);
+        ShopAdapter shopAdapter = getShopAdapterByName(args[0]);
         if (shopAdapter == null) {
             player.sendMessage("Shop not found.");
             return false;
@@ -155,18 +143,17 @@ public class ShopGuiCommandExecutor implements CommandExecutor {
     }
 
     private ShopAdapter getShopAdapterByName(String shopName) {
-        // Implement logic to retrieve the ShopAdapter instance by its name
-        // This could involve looking up a map or a database of registered shops
-        return new MyCustomShop(); // Placeholder for actual implementation
+        // Retrieve ShopAdapter by name
+        return new MyCustomShop(); // Placeholder
     }
 }
 ```
 
 ### Handling Purchases
 
-Use the `handlePurchase` method to process purchases when a player clicks on an item in the shop. You can handle purchases with either a material-based currency or a balance-based currency.
+Process purchases with `handlePurchase`:
 
-#### Example Handling Purchase with Material
+#### Material-Based Currency
 
 ```java
 public class ShopEventListener implements Listener {
@@ -181,7 +168,7 @@ public class ShopEventListener implements Listener {
         if (item == null || item.getType() == Material.AIR) return;
 
         qShopAPI.getInstance().handlePurchase(
-            Arrays.asList("&bPurchased item for %cost% coins!"),
+            Arrays.asList("&bPurchased for %cost% coins!"),
             event,
             Material.DIAMOND
         );
@@ -189,7 +176,7 @@ public class ShopEventListener implements Listener {
 }
 ```
 
-#### Example Handling Purchase with Balance
+#### Balance-Based Currency
 
 ```java
 public class ShopEventListener implements Listener {
@@ -208,22 +195,19 @@ public class ShopEventListener implements Listener {
 
         qShopAPI.getInstance().handlePurchase(
             adapter,
-            Arrays.asList("&bPurchased item for %cost% coins!"),
+            Arrays.asList("&bPurchased for %cost% coins!"),
             event
         );
     }
 
     private ShopAdapter getShopAdapterForPlayer(Player player) {
-        // Implement logic to retrieve the ShopAdapter instance for the player
-        return null; // Placeholder for actual implementation
+        // Retrieve ShopAdapter for player
+        return null; // Placeholder
     }
 }
 ```
 
 ## Contributing
 
-Feel free to contribute to the project by submitting pull requests or opening issues on GitHub.
-
----
-
-Feel free to adjust the examples based on your specific implementation and usage!
+Contribute by submitting pull requests or opening issues on GitHub.
+Feel free to adjust as needed for your specific implementation!
