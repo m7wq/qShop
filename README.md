@@ -22,7 +22,7 @@ Add this to your `pom.xml`:
 <dependency>
     <groupId>com.github.m7wq</groupId>
     <artifactId>qShop</artifactId>
-    <version>VERSION</version>
+    <version>beta-1.1</version>
 </dependency>
 ```
 
