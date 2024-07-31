@@ -40,7 +40,7 @@ dependencyResolutionManagement {
 }
 
 dependencies {
-    implementation 'com.github.m7wq:qShop: VERSION'
+    implementation 'com.github.m7wq:qShop:VERSION'
 }
 ```
 
@@ -57,7 +57,11 @@ public class MyPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Messager messager = new Messager().of("&aPurchase successful!", "&cInsufficient balance!");
+        /**
+         * to initialize the the api instance
+         * to use getInstance() method
+        */
+        
         QShopAPI.getInstance().load(messager);
     }
 }
@@ -168,6 +172,7 @@ public class ShopEventListener implements Listener {
         if (item == null || item.getType() == Material.AIR) return;
 
         qShopAPI.getInstance().handlePurchase(
+            new Messager().of("&aPurchase successful!", "&cInsufficient balance!")
             Arrays.asList("&bPurchased for %cost% coins!"),
             event,
             Material.DIAMOND
@@ -194,6 +199,7 @@ public class ShopEventListener implements Listener {
         if (adapter == null) return;
 
         qShopAPI.getInstance().handlePurchase(
+            new Messager().of("&aYou purchased this item!", &cNo enough balance!")
             adapter,
             Arrays.asList("&bPurchased for %cost% coins!"),
             event
