@@ -23,7 +23,7 @@ public class Messager {
      * @param notEnoughBalanceMessage the message to set when the user does not have enough balance.
      * @return the current instance of Messager.
      */
-    public Messager of(String purchasedMessage, String notEnoughBalanceMessage) {
+    public static Messager of(String purchasedMessage, String notEnoughBalanceMessage) {
         this.purchasedMessage = purchasedMessage;
         this.noEnoughBalanceMessage = notEnoughBalanceMessage;
         return this;
