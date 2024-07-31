@@ -40,7 +40,7 @@ dependencyResolutionManagement {
 }
 
 dependencies {
-    implementation 'com.github.m7wq:qShop:1.0v'
+    implementation 'com.github.m7wq:qShop: VERSION'
 }
 ```
 
@@ -58,7 +58,7 @@ public class MyPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         Messager messager = new Messager().of("&aPurchase successful!", "&cInsufficient balance!");
-        qShopAPI.getInstance().load(messager);
+        QShopAPI.getInstance().load(messager);
     }
 }
 ```
