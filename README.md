@@ -57,12 +57,11 @@ public class MyPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        /**
-         * to initialize the the api instance
-         * to use getInstance() method
-        */
         
-        QShopAPI.getInstance().load();
+         // to initialize the the api instance
+
+        
+        QShopAPI.load();
     }
 }
 ```
