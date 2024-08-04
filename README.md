@@ -62,7 +62,7 @@ public class MyPlugin extends JavaPlugin {
          * to use getInstance() method
         */
         
-        QShopAPI.getInstance().load(messager);
+        QShopAPI.getInstance().load();
     }
 }
 ```
