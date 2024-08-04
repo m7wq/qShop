@@ -28,12 +28,9 @@ public class QShopAPI {
      * This method should be called to set up the API with the required
      */
 
-    public void load() {
+    public static void load() {
 
         instance = new QShopAPI();
-
-
-
 
     }
 
