@@ -198,7 +198,7 @@ public class ShopEventListener implements Listener {
         if (adapter == null) return;
 
         qShopAPI.getInstance().handlePurchase(
-            new Messager().of("&aYou purchased this item!", &cNo enough balance!")
+            new Messager().of("&aYou purchased this item!", "&cNo enough balance!")
             adapter,
             Arrays.asList("&bPurchased for %cost% coins!"),
             event
