@@ -30,9 +30,17 @@ public class QShopAPI {
 
     public static void load() {
 
-        instance = new QShopAPI();
+        if (instance != null)
+            throw new IllegalStateException("qShopAPI instance is initialized already");
 
+        instance = new QShopAPI();
     }
+
+    /**
+    * private constructor
+    * ("for singleton pattern implementation")
+    */
+    private QShopAPI() {}
 
     /**
      * Retrieves the singleton instance of qShopAPI.
@@ -227,7 +235,7 @@ public class QShopAPI {
      * @return the colorized string.
      */
 
-    public String colorize(String s) {
+    private String colorize(String s) {
 
         return ChatColor.translateAlternateColorCodes('&', s);
     }
