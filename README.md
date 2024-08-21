@@ -100,6 +100,16 @@ public class MyCustomShop implements ShopAdapter {
     public @NotNull Lore getDefaultLore() {
         return new Lore().of(Arrays.asList("&bItem purchased!"));
     }
+}
+```
+
+### Implementing PaymentAdapter
+
+# Create a custom payment methods to handle purchasing with data or config coins
+
+```java
+
+public class MyPayment implements PaymentAdapter{
 
     @Override
     public void removeBalance(Player player, int amount) {
@@ -110,7 +120,9 @@ public class MyCustomShop implements ShopAdapter {
     public int getBalance(Player player) {
         return 1000; // Example balance
     }
+
 }
+
 ```
 
 ### Using `handleShopGui`
@@ -194,20 +206,12 @@ public class ShopEventListener implements Listener {
 
         if (item == null || item.getType() == Material.AIR) return;
 
-        ShopAdapter adapter = getShopAdapterForPlayer(player);
-        if (adapter == null) return;
-
         qShopAPI.getInstance().handlePurchase(
             new Messager().of("&aYou purchased this item!", "&cNo enough balance!")
-            adapter,
+            new MyPayment(),
             Arrays.asList("&bPurchased for %cost% coins!"),
             event
         );
-    }
-
-    private ShopAdapter getShopAdapterForPlayer(Player player) {
-        // Retrieve ShopAdapter for player
-        return null; // Placeholder
     }
 }
 ```
