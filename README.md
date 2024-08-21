@@ -105,7 +105,7 @@ public class MyCustomShop implements ShopAdapter {
 
 ### Implementing `PaymentAdapter`
 
-# Create a custom payment methods to handle purchasing with data or config balance
+Create a custom payment methods to handle purchasing with data or config balance
 
 ```java
 
