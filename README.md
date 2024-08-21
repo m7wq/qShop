@@ -103,13 +103,13 @@ public class MyCustomShop implements ShopAdapter {
 }
 ```
 
-### Implementing PaymentAdapter
+### Implementing `PaymentAdapter`
 
-# Create a custom payment methods to handle purchasing with data or config coins
+# Create a custom payment methods to handle purchasing with data or config balance
 
 ```java
 
-public class MyPayment implements PaymentAdapter{
+public class MyPayment implements PaymentAdapter {
 
     @Override
     public void removeBalance(Player player, int amount) {
