@@ -139,17 +139,8 @@ public class ShopGuiCommandExecutor implements CommandExecutor {
             return false;
         }
 
-        Player player = (Player) sender;
-        if (args.length < 1) {
-            player.sendMessage("Specify shop name.");
-            return false;
-        }
-
-        ShopAdapter shopAdapter = getShopAdapterByName(args[0]);
-        if (shopAdapter == null) {
-            player.sendMessage("Shop not found.");
-            return false;
-        }
+        ShopAdapter shopAdapter = new MyCustomShop();
+  
 
         Inventory shopInventory = qShopAPI.getInstance().handleShopGui(shopAdapter);
         player.openInventory(shopInventory);
@@ -157,10 +148,7 @@ public class ShopGuiCommandExecutor implements CommandExecutor {
         return true;
     }
 
-    private ShopAdapter getShopAdapterByName(String shopName) {
-        // Retrieve ShopAdapter by name
-        return new MyCustomShop(); // Placeholder
-    }
+
 }
 ```
 
@@ -175,13 +163,6 @@ public class ShopEventListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
-
-        Player player = (Player) event.getWhoClicked();
-        ItemStack item = event.getCurrentItem();
-
-        if (item == null || item.getType() == Material.AIR) return;
-
         qShopAPI.getInstance().handlePurchase(
             new Messager().of("&aPurchase successful!", "&cInsufficient balance!")
             Arrays.asList("&bPurchased for %cost% coins!"),
@@ -199,13 +180,6 @@ public class ShopEventListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
-
-        Player player = (Player) event.getWhoClicked();
-        ItemStack item = event.getCurrentItem();
-
-        if (item == null || item.getType() == Material.AIR) return;
-
         qShopAPI.getInstance().handlePurchase(
             new Messager().of("&aYou purchased this item!", "&cNo enough balance!")
             new MyPayment(),
