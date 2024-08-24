@@ -22,7 +22,7 @@ Add this to your `pom.xml`:
 <dependency>
     <groupId>com.github.m7wq</groupId>
     <artifactId>qShop</artifactId>
-    <version>beta-1.5</version>
+    <version>beta-1.6</version>
 </dependency>
 ```
 
@@ -40,7 +40,7 @@ dependencyResolutionManagement {
 }
 
 dependencies {
-    implementation 'com.github.m7wq:qShop:beta-1.4'
+    implementation 'com.github.m7wq:qShop:beta-1.6'
 }
 ```
 
@@ -51,16 +51,10 @@ dependencies {
 Initialize and load the API in your plugin's main class:
 
 ```java
-public class MyPlugin extends JavaPlugin {
-
-    private qShopAPI shopAPI;
-
+public class Plugin extends JavaPlugin{
     @Override
-    public void onEnable() {
-        
-         // to initialize the the api instance
-
-        
+    public void onEnable(){
+        // Initialize the instance
         QShopAPI.load();
     }
 }
@@ -71,34 +65,24 @@ public class MyPlugin extends JavaPlugin {
 Create a custom shop by implementing `ShopAdapter`:
 
 ```java
-public class MyCustomShop implements ShopAdapter {
+public class MyCustomShop extends ShopAdapter{
+
+    @Size(size = 9)
+    @Title(title = "Swords Shop")
+    @Lore(lore = {"Im Sword!","&cBUY ME, To slash Your Enemies","Cost: %cost%"})
+    @Override
+    public Shop getShop() {
+   
+        return super.getShop(); // or new Shop()
+    }
 
     @Override
-    public @NotNull Contents getContents() {
+    public @NotNull Contents getContents(){
         return Contents.of(
-            new Item(createItem("ItemStack", Arrays.asList("Line1", "Line2"), Material.DIAMOND), 0, 1000),
-            new Item(new ItemStack(Material.ELYTRA), 2, 2000)
+            new Item[]{
+                new Item(new ItemStack(Material.COOKIE), 5, 1)
+            }
         );
-    }
-
-    @Override
-    public @NotNull String getTitle() {
-        return "My Custom Shop";
-    }
-
-    @Override
-    public @NotNull Integer getSize() {
-        return 9; // Inventory size
-    }
-
-    @Override
-    public Lore getLore() {
-        return new Lore().of(Arrays.asList("&aBuy this for %cost% coins!"));
-    }
-
-    @Override
-    public @NotNull Lore getDefaultLore() {
-        return new Lore().of(Arrays.asList("&bItem purchased!"));
     }
 }
 ```
