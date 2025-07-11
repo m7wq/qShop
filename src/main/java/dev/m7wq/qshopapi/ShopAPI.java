@@ -63,15 +63,14 @@ public class ShopAPI {
         edits.getEditable().put(string, editable);
     }
 
-    public Inventory getShop(String shopName){
+    public Inventory getShop(String shopName) {
         for (ShopInterface shop : shops.getShops()) {
             if (TextHelper.format(shop.getTitle()).equalsIgnoreCase(TextHelper.format(shopName)))
                 return ShopUtil.toInventory(shop);
         }
 
-
-
-    
+        return null;
+    }
 
 }
 
