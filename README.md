@@ -1,7 +1,7 @@
 
 # qShop
 
-qShop is a customizable shop plugin for Minecraft servers with a flexible API for various in-game shops.
+qShop is a customizable shop-maker for Minecraft servers with a flexible API for various in-game shops.
 
 ## Installation
 
@@ -22,7 +22,7 @@ Add this to your `pom.xml`:
 <dependency>
     <groupId>com.github.m7wq</groupId>
     <artifactId>qShop</artifactId>
-    <version>beta-1.6</version>
+    <version>2.0</version>
 </dependency>
 ```
 
@@ -40,137 +40,200 @@ dependencyResolutionManagement {
 }
 
 dependencies {
-    implementation 'com.github.m7wq:qShop:beta-1.6'
+    implementation 'com.github.m7wq:qShop:2.0'
 }
 ```
 
 ## Usage
 
 ### Setup in Main Class
-
-Initialize and load the API in your plugin's main class:
+And examples of the usages of the ShopAPI
 
 ```java
-public class Plugin extends JavaPlugin{
+package dev.m7wq.test;
+
+
+import dev.m7wq.qshopapi.ShopAPI;
+import dev.m7wq.qshopapi.entity.Input;
+import dev.m7wq.qshopapi.main.ShopInterface;
+import dev.velix.imperat.BukkitSource;
+import dev.velix.imperat.command.Command;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class Main extends JavaPlugin {
+
     @Override
     public void onEnable(){
-        // Initialize the instance
-        QShopAPI.load();
-    }
-}
-```
 
-### Implementing `ShopAdapter`
+        ShopAPI shopAPI = new ShopAPI(this);
 
-Create a custom shop by implementing `ShopAdapter`:
+        // Registering a shop
+        shopAPI.registerShop(new MyLovelyShop());
 
-```java
-public class MyCustomShop extends ShopAdapter{
+        // Get as inventory
+        Inventory shop = shopAPI.getShop("ShopTitle");
 
-    @Size(size = 9)
-    @Title(title = "Swords Shop")
-    @Lore(lore = {"Im Sword!","&cBUY ME, To slash Your Enemies","Cost: %cost%"})
-    @Override
-    public Shop getShop() {
-   
-        return super.getShop(); // or new Shop()
-    }
+        // registering command input:-
 
-    @Override
-    public @NotNull Contents getContents(){
-        return Contents.of(
-            new Item[]{
-                new Item(new ItemStack(Material.COOKIE), 5, 1)
-            }
+        /**
+         * Or you can use annotated command class
+         * @see https://docs.velix.dev/Imperat/
+         * for more info about imperat
+         */
+        Command<BukkitSource> command = Command.<BukkitSource>create("lol").build();
+        command.setDefaultUsageExecution((source,context)->{
+            source.reply("&aHello there!");
+        });
+
+        // Register the input
+        shopAPI.registerInput(
+                "command1",
+                new Input<Command<BukkitSource>>().of(command)
         );
+
+        // Registering Inventory Input:-
+
+        // Making the menu
+        Inventory inventory = Bukkit.createInventory(null,9,"Inventory");
+
+
+        // Registering menu input
+        shopAPI.registerInput("menu1", new Input<Inventory>().of(inventory));
+
+        // Registering ItemStack input:-
+
+        // Making the item
+        ItemStack itemStack = new ItemStack(Material.DIAMOND_SWORD);
+
+        // registering item input
+        shopAPI.registerInput("myItem",new Input<ItemStack>().of(itemStack));
+
+        // Registering an Edit
+        // NOTE: This is built in by the way!!!
+        // Edit will be effected in DisplayName & Lore
+        shopAPI.registerEdit("%price%",((string, item) -> string.replace("%price%",String.valueOf(item.getPrice()))));
+
+
+        Bukkit.getPluginManager().registerEvents(new PlayerPurchaseListener(),this);
+
+
+    }
+}
+
+```
+
+### Making a shop
+
+```java
+package dev.m7wq.test;
+
+import dev.m7wq.qshopapi.annotations.*;
+import dev.m7wq.qshopapi.annotations.enums.ClickPurpose;
+import dev.m7wq.qshopapi.entity.Item;
+import dev.m7wq.qshopapi.main.enums.Capacity;
+import dev.velix.imperat.BukkitSource;
+import dev.velix.imperat.command.Command;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
+
+@Shop(title = "Black Market", capacity = Capacity.SIX_ROWS)
+public class MyLovelyShop {
+
+    /**
+     * Single slot making
+     * @Annotation receives slot-value
+     */
+    @Slot(1)
+    Item test = Item.builder().name("item").price(3)
+            .clickable(e -> e.getWhoClicked().sendMessage("HI!!!"))
+            .build();
+
+    /**
+     * @Purpose For several Items,
+     * You have to define the slot in the object
+     */
+    @Slots
+    Item[] items = new Item[]{
+            Item.builder().name("item1").slot(2).build(),
+            Item.builder().name("item2").slot(3).price(5).build()
+    };
+
+    /**
+     * @Usage of input system,
+     * @Input annotation replaces the value of the variable with the registered input
+     * @AnnotatedClickable annotation complete the purpose when `forSlot` get clicked
+     * @Dependencies qShopAPI supports Imperat for command handling
+     */
+
+    // Perform a command
+    @Input("command1")
+    @AnnotatedClickable(purpose = ClickPurpose.PERFORM_COMMAND, forSlot = 1)
+    Command<BukkitSource> command;
+
+    // Open an inventory
+    @Input("menu1")
+    @AnnotatedClickable(purpose = ClickPurpose.OPEN_INVENTORY, forSlot = 2)
+    Inventory inventory;
+
+    // Purchase an item
+    @Input("myItem")
+    @AnnotatedClickable(purpose = ClickPurpose.DIRECT_PURCHASE, forSlot = 3)
+    ItemStack item;
+
+    /**
+     * Making sub-shop
+     * @Annotate @Shop Annotation like any shop
+     * @Clickable You have to put clickable-purpose so you can make it open-able,
+     * And define the slot of the item if you clicked on it open the sub-shop
+     */
+    @Shop(title = "White Market", capacity = Capacity.ONE_ROW)
+    @AnnotatedClickable(purpose = ClickPurpose.OPEN_SUB_SHOP, forSlot = 3)
+    public static class WhiteMarket{
+
+        @Slot(1)
+        Item test = Item.builder().build();
+
+        @Slots
+        Item[] items = new Item[]{
+                Item.builder().name("item1").slot(3).build(),
+                Item.builder().name("item2").slot(4).build()
+        };
+
     }
 }
 ```
 
-### Implementing `PaymentAdapter`
+### Using `PlayerPurchaseEvent`
 
-Create a custom payment methods to handle purchasing with data or config balance
-
-```java
-
-public class MyPayment implements PaymentAdapter {
-
-    @Override
-    public void removeBalance(Player player, int amount) {
-        // Implement balance removal
-    }
-
-    @Override
-    public int getBalance(Player player) {
-        return 1000; // Example balance
-    }
-
-}
-
-```
-
-### Using `handleShopGui`
-
-Create and open a shop GUI with:
+Built-in event for player purchase event while using `ClickPurpose.DIRECT_PURCHASE`
 
 ```java
-public class ShopGuiCommandExecutor implements CommandExecutor {
-    
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Players only!");
-            return false;
-        }
 
-        ShopAdapter shopAdapter = new MyCustomShop();
-  
+package dev.m7wq.test;
 
-        Inventory shopInventory = qShopAPI.getInstance().handleShopGui(shopAdapter);
-        player.openInventory(shopInventory);
+import dev.m7wq.qshopapi.payment.PlayerPurchaseEvent;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
-        return true;
-    }
-
-
-}
-```
-
-### Handling Purchases
-
-Process purchases with `handlePurchase`:
-
-#### Material-Based Currency
-
-```java
-public class ShopEventListener implements Listener {
+public class PlayerPurchaseListener implements Listener {
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        qShopAPI.getInstance().handlePurchase(
-            new Messager().of("&aPurchase successful!", "&cInsufficient balance!")
-            Arrays.asList("&bPurchased for %cost% coins!"),
-            event,
-            Material.DIAMOND
-        );
+    public void onPurchase(PlayerPurchaseEvent event){
+
+        int price = event.getPrice();
+        Player player = event.getPlayer();
+
+        // Handle your implementation...
+
+
     }
-}
-```
 
-#### Balance-Based Currency
-
-```java
-public class ShopEventListener implements Listener {
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        qShopAPI.getInstance().handlePurchase(
-            new Messager().of("&aYou purchased this item!", "&cNo enough balance!")
-            new MyPayment(),
-            Arrays.asList("&bPurchased for %cost% coins!"),
-            event
-        );
-    }
 }
 ```
 
