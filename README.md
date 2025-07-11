@@ -46,86 +46,6 @@ dependencies {
 
 ## Usage
 
-### Setup in Main Class
-And examples of the usages of the ShopAPI
-
-```java
-package dev.m7wq.test;
-
-
-import dev.m7wq.qshopapi.ShopAPI;
-import dev.m7wq.qshopapi.entity.Input;
-import dev.m7wq.qshopapi.main.ShopInterface;
-import dev.velix.imperat.BukkitSource;
-import dev.velix.imperat.command.Command;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-
-public class Main extends JavaPlugin {
-
-    @Override
-    public void onEnable(){
-
-        ShopAPI shopAPI = new ShopAPI(this);
-
-        // Registering a shop
-        shopAPI.registerShop(new MyLovelyShop());
-
-        // Get as inventory
-        Inventory shop = shopAPI.getShop("ShopTitle");
-
-        // registering command input:-
-
-        /**
-         * Or you can use annotated command class
-         * @see https://docs.velix.dev/Imperat/
-         * for more info about imperat
-         */
-        Command<BukkitSource> command = Command.<BukkitSource>create("lol").build();
-        command.setDefaultUsageExecution((source,context)->{
-            source.reply("&aHello there!");
-        });
-
-        // Register the input
-        shopAPI.registerInput(
-                "command1",
-                new Input<Command<BukkitSource>>().of(command)
-        );
-
-        // Registering Inventory Input:-
-
-        // Making the menu
-        Inventory inventory = Bukkit.createInventory(null,9,"Inventory");
-
-
-        // Registering menu input
-        shopAPI.registerInput("menu1", new Input<Inventory>().of(inventory));
-
-        // Registering ItemStack input:-
-
-        // Making the item
-        ItemStack itemStack = new ItemStack(Material.DIAMOND_SWORD);
-
-        // registering item input
-        shopAPI.registerInput("myItem",new Input<ItemStack>().of(itemStack));
-
-        // Registering an Edit
-        // NOTE: This is built in by the way!!!
-        // Edit will be effected in DisplayName & Lore
-        shopAPI.registerEdit("%price%",((string, item) -> string.replace("%price%",String.valueOf(item.getPrice()))));
-
-
-        Bukkit.getPluginManager().registerEvents(new PlayerPurchaseListener(),this);
-
-
-    }
-}
-
-```
-
 ### Making a shop
 
 ```java
@@ -206,6 +126,86 @@ public class MyLovelyShop {
 
     }
 }
+```
+
+### Setup in Main Class
+And examples of the usages of the ShopAPI
+
+```java
+package dev.m7wq.test;
+
+
+import dev.m7wq.qshopapi.ShopAPI;
+import dev.m7wq.qshopapi.entity.Input;
+import dev.m7wq.qshopapi.main.ShopInterface;
+import dev.velix.imperat.BukkitSource;
+import dev.velix.imperat.command.Command;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class Main extends JavaPlugin {
+
+    @Override
+    public void onEnable(){
+
+        ShopAPI shopAPI = new ShopAPI(this);
+
+        // Registering a shop
+        shopAPI.registerShop(new MyLovelyShop());
+
+        // Get as inventory
+        Inventory shop = shopAPI.getShop("ShopTitle");
+
+        // registering command input:-
+
+        /**
+         * Or you can use annotated command class
+         * @see https://docs.velix.dev/Imperat/
+         * for more info about imperat
+         */
+        Command<BukkitSource> command = Command.<BukkitSource>create("lol").build();
+        command.setDefaultUsageExecution((source,context)->{
+            source.reply("&aHello there!");
+        });
+
+        // Register the input
+        shopAPI.registerInput(
+                "command1",
+                new Input<Command<BukkitSource>>().of(command)
+        );
+
+        // Registering Inventory Input:-
+
+        // Making the menu
+        Inventory inventory = Bukkit.createInventory(null,9,"Inventory");
+
+
+        // Registering menu input
+        shopAPI.registerInput("menu1", new Input<Inventory>().of(inventory));
+
+        // Registering ItemStack input:-
+
+        // Making the item
+        ItemStack itemStack = new ItemStack(Material.DIAMOND_SWORD);
+
+        // registering item input
+        shopAPI.registerInput("myItem",new Input<ItemStack>().of(itemStack));
+
+        // Registering an Edit
+        // NOTE: This is built in by the way!!!
+        // Edit will be effected in DisplayName & Lore
+        shopAPI.registerEdit("%price%",((string, item) -> string.replace("%price%",String.valueOf(item.getPrice()))));
+
+
+        Bukkit.getPluginManager().registerEvents(new PlayerPurchaseListener(),this);
+
+
+    }
+}
+
 ```
 
 ### Using `PlayerPurchaseEvent`
