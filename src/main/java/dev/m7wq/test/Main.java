@@ -22,6 +22,9 @@ public class Main extends JavaPlugin {
         // Registering a shop
         shopAPI.registerShop(new MyLovelyShop());
 
+        // Get as inventory
+        Inventory shop = shopAPI.getShop("ShopTitle");
+
         // registering command input:-
 
         /**

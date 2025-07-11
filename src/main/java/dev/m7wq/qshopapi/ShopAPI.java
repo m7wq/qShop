@@ -9,7 +9,10 @@ import dev.m7wq.qshopapi.storage.Inputs;
 import dev.m7wq.qshopapi.entity.Input;
 import dev.m7wq.qshopapi.storage.Edits;
 import dev.m7wq.qshopapi.storage.Shops;
+import dev.m7wq.qshopapi.utils.ShopUtil;
+import dev.m7wq.qshopapi.utils.TextHelper;
 import lombok.Getter;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
 @Getter
@@ -59,6 +62,12 @@ public class ShopAPI {
     public void registerEdit(String string, Editable editable){
         edits.getEditable().put(string, editable);
     }
+
+    public Inventory getShop(String shopName){
+        for (ShopInterface shop : shops.getShops()) {
+            if (TextHelper.format(shop.getTitle()).equalsIgnoreCase(TextHelper.format(shopName)))
+                return ShopUtil.toInventory(shop);
+        }
 
 
 
