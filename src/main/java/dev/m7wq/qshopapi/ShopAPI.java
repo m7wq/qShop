@@ -38,6 +38,7 @@ public class ShopAPI {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(new InventoryClickListener(getShops()),plugin);
 
+        edits.getEditable().put("%price%",(text,item)->text.replace("%price%",String.valueOf(item.getPrice())));
     }
 
     /**

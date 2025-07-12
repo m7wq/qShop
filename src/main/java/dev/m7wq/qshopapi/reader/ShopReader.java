@@ -10,6 +10,7 @@ import dev.m7wq.qshopapi.main.enums.Capacity;
 import dev.m7wq.qshopapi.payment.PlayerPurchaseEvent;
 import dev.m7wq.qshopapi.storage.Inputs;
 import dev.m7wq.qshopapi.utils.ShopUtil;
+import dev.m7wq.qshopapi.utils.TextHelper;
 import dev.velix.imperat.BukkitSource;
 import dev.velix.imperat.command.Command;
 import lombok.SneakyThrows;
@@ -34,6 +35,7 @@ public class ShopReader implements Readable<ShopInterface> {
         Shop shopAnnotation = clazz.getAnnotation(Shop.class);
 
         String shopName = shopAnnotation.title();
+        shopName = TextHelper.format(shopName);
         Capacity capacity = shopAnnotation.capacity();
         List<Item> items = new ArrayList<>();
 
@@ -113,7 +115,7 @@ public class ShopReader implements Readable<ShopInterface> {
             // Handle purposes
             if (field.isAnnotationPresent(AnnotatedClickable.class)){
 
-                AnnotatedClickable clickable = clazz.getAnnotation(AnnotatedClickable.class);
+                AnnotatedClickable clickable = field.getAnnotation(AnnotatedClickable.class);
 
                 ClickPurpose purpose = clickable.purpose();
                 int slot = clickable.forSlot();
