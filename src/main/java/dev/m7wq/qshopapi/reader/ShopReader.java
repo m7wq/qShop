@@ -97,6 +97,8 @@ public class ShopReader implements Readable<ShopInterface> {
         // -- FOR PURPOSES --
         for (Field field : clazz.getDeclaredFields()) {
 
+            field.setAccessible(true);
+
             // Handle inputs because the priority for it
             if (field.isAnnotationPresent(Input.class)) {
 
