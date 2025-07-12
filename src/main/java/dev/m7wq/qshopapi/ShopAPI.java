@@ -45,7 +45,7 @@ public class ShopAPI {
      * Read it then add to shops set
      */
     public void registerShop(Object shop){
-        ShopInterface shopInterface = getReader().read(shop.getClass(),inputs,plugin);
+        ShopInterface shopInterface = getReader().read(shop,shop.getClass(),inputs,plugin);
         shops.getShops().add(shopInterface);
     }
 
