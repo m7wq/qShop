@@ -15,6 +15,8 @@ import lombok.Getter;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
+import java.util.function.Predicate;
+
 @Getter
 public class ShopAPI {
 
@@ -63,9 +65,9 @@ public class ShopAPI {
         edits.getEditable().put(string, editable);
     }
 
-    public Inventory getShop(String shopName) {
+    public Inventory getShop(Predicate<ShopInterface> predicate) {
         for (ShopInterface shop : shops.getShops()) {
-            if (TextHelper.format(shop.getTitle()).equalsIgnoreCase(TextHelper.format(shopName)))
+            if (predicate.test(shop))
                 return ShopUtil.toInventory(shop);
         }
 

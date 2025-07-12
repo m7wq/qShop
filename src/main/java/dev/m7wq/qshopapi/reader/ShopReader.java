@@ -25,7 +25,7 @@ public class ShopReader implements Readable<ShopInterface> {
 
     @SneakyThrows
     @Override
-    public ShopInterface read(Class<?> clazz, Inputs inputs, Plugin plugin) {
+    public ShopInterface read(Object instance,Class<?> clazz, Inputs inputs, Plugin plugin) {
 
         if (!clazz.isAnnotationPresent(Shop.class))
             throw new IllegalStateException("Shop class should be annotated with @Shop annotation");
@@ -59,7 +59,7 @@ public class ShopReader implements Readable<ShopInterface> {
 
                 int num = slot.value();
 
-                Item item = (Item) field.get(clazz);
+                Item item = (Item) field.get(instance);
 
                 item.setSlot(num);
 
@@ -75,7 +75,7 @@ public class ShopReader implements Readable<ShopInterface> {
                 if (field.getType() != Item[].class)
                     throw new IllegalStateException("Several Slots DataType should be Item[] not "+field.getType());
 
-                Item[] value = (Item[]) field.get(clazz);
+                Item[] value = (Item[]) field.get(instance);
 
                 Collections.addAll(items, value);
 
@@ -104,7 +104,7 @@ public class ShopReader implements Readable<ShopInterface> {
 
                 dev.m7wq.qshopapi.entity.Input<?> theInput = inputs.getInputMap().get(key);
 
-                field.set(clazz, theInput.getValue());
+                field.set(instance, theInput.getValue());
 
 
 
@@ -120,10 +120,10 @@ public class ShopReader implements Readable<ShopInterface> {
 
                 // Handle commands purpose
                 if (purpose == ClickPurpose.PERFORM_COMMAND){
-                    if (!(field.get(clazz) instanceof Command<?>) )
+                    if (!(field.get(instance) instanceof Command<?>) )
                         throw new IllegalStateException("To perform command you have to use Command<BukkitSource> object of dev.velix.imperat");
 
-                    Command<BukkitSource> command = (Command<BukkitSource>) field.get(clazz);
+                    Command<BukkitSource> command = (Command<BukkitSource>) field.get(instance);
 
                     ActionBase actionBase = new ActionBase(plugin);
 
@@ -175,7 +175,7 @@ public class ShopReader implements Readable<ShopInterface> {
                     if (purpose != ClickPurpose.OPEN_SUB_SHOP)
                         continue;
 
-                    ShopInterface subShop = read(subClazz, inputs, plugin);
+                    ShopInterface subShop = read(instance,subClazz, inputs, plugin);
 
                     subShops.add(subShop);
 

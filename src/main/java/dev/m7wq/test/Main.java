@@ -19,12 +19,6 @@ public class Main extends JavaPlugin {
 
         ShopAPI shopAPI = new ShopAPI(this);
 
-        // Registering a shop
-        shopAPI.registerShop(new MyLovelyShop());
-
-        // Get as inventory
-        Inventory shop = shopAPI.getShop("ShopTitle");
-
         // registering command input:-
 
         /**
@@ -68,6 +62,12 @@ public class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new PlayerPurchaseListener(),this);
 
+        //IMPORTANT: THOSE HAVE TO BE AT THE END BECAUSE THE INPUTS HAVE TO BE INITIALIZED
 
+        // Registering a shop
+        shopAPI.registerShop(new MyLovelyShop());
+
+        // Get as inventory (Example) you can explore ShopInterface Object
+        Inventory shop = shopAPI.getShop((shopInterface) -> shopInterface.getTitle().equalsIgnoreCase("LOVELY SHOP"));
     }
 }

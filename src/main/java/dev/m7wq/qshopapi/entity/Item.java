@@ -15,7 +15,7 @@ public class Item {
     Clickable clickable;
     String name;
     List<String> lore;
-    Material Type;
+    Material type;
     int price;
     @Nullable int slot;
 

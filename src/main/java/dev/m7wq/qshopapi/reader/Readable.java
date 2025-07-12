@@ -5,6 +5,6 @@ import org.bukkit.plugin.Plugin;
 
 public interface Readable<V> {
 
-    V read(Class<?> clazz, Inputs inputs, Plugin plugin);
+    V read(Object instance,Class<?> clazz, Inputs inputs, Plugin plugin);
 
 }
