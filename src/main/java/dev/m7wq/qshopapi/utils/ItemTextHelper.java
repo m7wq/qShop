@@ -24,8 +24,10 @@ public class ItemTextHelper {
 
         String str = string;
 
+
+
         for (String key : edits.getEditable().keySet()){
-            if (str.contains(key))
+            if (ChatColor.stripColor(str).contains(key))
                str = edits.getEditable().get(key).replace(str,item);
         }
 
@@ -39,13 +41,6 @@ public class ItemTextHelper {
         List<String> formated = new ArrayList<>();
 
         for (String str : stringList) {
-
-
-
-            for (String key : edits.getEditable().keySet()) {
-                if (str.contains(key))
-                    str = edits.getEditable().get(key).replace(str,item);
-            }
 
             formated.add(format(str, edits));
         }

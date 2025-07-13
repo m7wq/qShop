@@ -54,7 +54,7 @@ public class ShopAPI {
      * Register inputs that can be used as values on shop class attributes
      * @Input can be more than a type as (Command, Inventory, more soon)
      */
-    public void registerInput(String key,Input<?> input){
+    public void registerInput(String key,Input input){
         inputs.getInputMap().put(key,input);
     }
 

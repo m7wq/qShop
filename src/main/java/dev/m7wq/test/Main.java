@@ -34,7 +34,7 @@ public class Main extends JavaPlugin {
         // Register the input
         shopAPI.registerInput(
                 "command1",
-                new Input<Command<BukkitSource>>().of(command)
+                Input.of(command)
         );
 
         // Registering Inventory Input:-
@@ -44,7 +44,7 @@ public class Main extends JavaPlugin {
 
 
         // Registering menu input
-        shopAPI.registerInput("menu1", new Input<Inventory>().of(inventory));
+        shopAPI.registerInput("menu1", Input.of(inventory));
 
         // Registering ItemStack input:-
 
@@ -52,7 +52,7 @@ public class Main extends JavaPlugin {
         ItemStack itemStack = new ItemStack(Material.DIAMOND_SWORD);
 
         // registering item input
-        shopAPI.registerInput("myItem",new Input<ItemStack>().of(itemStack));
+        shopAPI.registerInput("myItem",Input.of(itemStack));
 
         // Registering an Edit
         // NOTE: This is built in by the way!!!

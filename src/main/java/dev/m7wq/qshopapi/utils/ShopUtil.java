@@ -47,6 +47,8 @@ public class ShopUtil {
             meta.setDisplayName(TextHelper.format(item.getName()));
             meta.setLore(TextHelper.format(item.getLore()));
 
+            itemStack.setItemMeta(meta);
+
             inventory.setItem(item.getSlot(),itemStack);
 
         }

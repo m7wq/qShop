@@ -1,35 +1,32 @@
 package dev.m7wq.qshopapi.entity;
 
+import dev.velix.imperat.BukkitSource;
 import dev.velix.imperat.command.Command;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class Input<T> {
-
-    List<Class<?>> classes = Arrays.asList(Command.class, Inventory.class);
-
-    public Input(){}
-
-    private Input(T value){
-        this.value = value;
-    }
+@AllArgsConstructor
+public class Input {
 
     @Getter
-    private T value;
+    private Object value;
 
-    public Input<T> of(T input){
+    public static Input of(Object value){
 
-        if (classes.contains(input.getClass())){
+        Command command = Command.create("lol").build();
 
-            return new Input<T>(input);
+        if (!(value instanceof Command<?>)
+                && !(value instanceof Inventory)
+                && !(value instanceof ItemStack)
+                && !(value instanceof Item))
+            throw new IllegalStateException("Not valid input: "+value.getClass().getName());
 
-
-        }
-
-        throw new IllegalStateException("Not valid input: "+input.getClass().getName());
+        return new Input(value);
 
     }
 }

@@ -2,6 +2,7 @@ package dev.m7wq.qshopapi.utils;
 
 import lombok.experimental.UtilityClass;
 import net.md_5.bungee.api.ChatColor;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,8 @@ public class TextHelper {
     }
 
     public List<String> format(List<String> stringList){
+
+        if (stringList==null)return new ArrayList<>();
 
         List<String> colorized = new ArrayList<>();
 

@@ -3,52 +3,67 @@ package dev.m7wq.qshopapi.events;
 import dev.m7wq.qshopapi.entity.Item;
 import dev.m7wq.qshopapi.storage.Shops;
 import dev.m7wq.qshopapi.utils.TextHelper;
-import lombok.AllArgsConstructor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-@AllArgsConstructor
+
 public class InventoryClickListener implements Listener {
+
+    public InventoryClickListener(Shops shops) {
+        this.shops = shops;
+    }
 
     Shops shops;
 
     @EventHandler
     public void onClick(InventoryClickEvent e){
 
-        ItemStack currentItem = e.getCurrentItem();
 
-        shops.getShops().forEach(shop ->{
 
-            for (Item item : shop.getItems()){
+        @NotNull ItemStack currentItem = e.getCurrentItem();
 
-                if (item.getSlot() == e.getSlot()
-                && item.getType() == currentItem.getType()
-                && TextHelper.format(item.getName()).equalsIgnoreCase(TextHelper.format(currentItem.getItemMeta().getDisplayName()))){
 
-                    item.getClickable().click(e);
-                    return;
-                }
 
-            }
+        shops.getShops().forEach(shop -> {
 
-            shop.getSubShops().forEach(subShop ->{
-                for (Item item : shop.getItems()){
+            if (shop.getTitle().equalsIgnoreCase(e.getInventory().getTitle())) {
 
-                    if (item.getSlot() == e.getSlot()
-                            && item.getType() == currentItem.getType()
-                            && item.getName() == currentItem.getItemMeta().getDisplayName()){
+                for (Item item : shop.getItems()) {
 
-                        item.getClickable().click(e);
+
+                    String currentItemName = TextHelper.format(currentItem.getItemMeta().getDisplayName());
+
+                    String itemName = TextHelper.format(item.getName());
+
+                    if (item.getSlot() == e.getSlot() && item.getType() == currentItem.getType()) {
+
+
+                        if (currentItemName.equalsIgnoreCase(itemName)) {
+                            item.getClickable().click(e);
+                        }
+
 
                     }
 
-                }
-            });
 
+                }
+
+
+                shop.getSubShops().forEach(subShop -> {
+                    for (Item item : subShop.getItems()) {
+
+
+                    }
+                });
+            }
 
         });
+
+
+
 
 
 

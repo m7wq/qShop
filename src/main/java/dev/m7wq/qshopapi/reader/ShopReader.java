@@ -17,6 +17,8 @@ import lombok.SneakyThrows;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
@@ -106,7 +108,7 @@ public class ShopReader implements Readable<ShopInterface> {
 
                 String key = input.value();
 
-                dev.m7wq.qshopapi.entity.Input<?> theInput = inputs.getInputMap().get(key);
+                dev.m7wq.qshopapi.entity.Input theInput = inputs.getInputMap().get(key);
 
                 field.set(instance, theInput.getValue());
 
@@ -143,18 +145,50 @@ public class ShopReader implements Readable<ShopInterface> {
 
 
                 }else if (purpose == ClickPurpose.DIRECT_PURCHASE){
-                    shopInterface.getItems().forEach(item ->{
-
-                        item.setClickable(e->{
-                            if (e.getWhoClicked() instanceof Player player)
-                                Bukkit.getPluginManager().callEvent(new PlayerPurchaseEvent(player,item.getPrice()));
 
 
-                        });
+                    Item item = shopInterface.getItems().stream().filter(i->i.getSlot() ==slot).findFirst().get();
 
+
+
+                    Object sale = field.get(instance);
+
+                    if (!(sale instanceof ItemStack))
+                        new IllegalStateException("DIRECT_PURCHASE field dataType can only be ItemStack not "+field.getType());
+
+
+
+                    item.setClickable(e-> {
+                        if (e.getWhoClicked() instanceof Player player) {
+                            Bukkit.getPluginManager().callEvent(new PlayerPurchaseEvent(player, item.getPrice()));
+                            player.getInventory().addItem((ItemStack) sale);
+                        }
+
+                    });
+
+
+
+
+                }else if (purpose == ClickPurpose.OPEN_INVENTORY){
+
+                    Item item = shopInterface.getItems().stream().filter(i->i.getSlot() ==slot).findFirst().get();
+
+
+                    Object obj = field.get(instance);
+
+                    if (!(obj instanceof Inventory))
+                        new IllegalStateException("OPEN_INVENTORY field dataType can only be Inventory not "+field.getType());
+
+                    item.setClickable(e->{
+
+                        if (e.getWhoClicked() instanceof Player player){
+                            player.openInventory((Inventory) obj);
+                        }
 
 
                     });
+
+
                 }
             }
 

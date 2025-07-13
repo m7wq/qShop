@@ -9,6 +9,6 @@ import java.util.HashMap;
 
 @Getter
 public class Inputs {
-    protected HashMap<String, Input<?>> inputMap = new HashMap<>();
+    protected HashMap<String, Input> inputMap = new HashMap<>();
 
 }
