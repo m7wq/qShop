@@ -27,7 +27,7 @@ public class ShopUtil {
             ItemMeta meta = itemStack.getItemMeta();
             meta.setDisplayName(itemTextHelper.format(item.getName(), edits));
             meta.setLore(itemTextHelper.format(item.getLore(), edits));
-
+            itemStack.setItemMeta(meta);
             inventory.setItem(item.getSlot(),itemStack);
 
         }
