@@ -15,7 +15,7 @@ public class Main extends JavaPlugin {
 
     ShopAPI shopAPI;
 
-    @Override
+
     public void onEnable(){
 
         shopAPI = new ShopAPI(this);
@@ -79,7 +79,7 @@ public class Main extends JavaPlugin {
         Inventory shop = shopAPI.getShop((shopInterface) -> shopInterface.getTitle().equalsIgnoreCase("LOVELY SHOP"));
     }
 
-    @Override
+
     public void onDisable(){
         // Handle data
         shopAPI.disable();

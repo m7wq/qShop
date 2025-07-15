@@ -24,20 +24,22 @@ public class PlayerPurchaseListener implements PurchaseListener {
 
         // Basic example
 
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("Example");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(),"data.yml"));
+//        Plugin plugin = Bukkit.getPluginManager().getPlugin("Example");
+//        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(),"data.yml"));
+//
+//        ConfigurationSection section = config.getConfigurationSection("players-coins");
+//
+//        int coins = section.getInt(player.getName());
+//
+//        if (coins < price) {
+//            player.sendMessage("You need "+price+" to purchase this");
+//            return false;
+//        }
+//
+//        section.set(player.getName(), coins-price);
+//        player.sendMessage("Bought successfully");
+//        return true;
 
-        ConfigurationSection section = config.getConfigurationSection("players-coins");
-
-        int coins = section.getInt(player.getName());
-
-        if (coins < price) {
-            player.sendMessage("You need "+price+" to purchase this");
-            return false;
-        }
-
-        section.set(player.getName(), coins-price);
-        player.sendMessage("Bought successfully");
-        return true;
+        return
     }
 }
