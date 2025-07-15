@@ -22,7 +22,7 @@ Add this to your `pom.xml`:
 <dependency>
     <groupId>com.github.m7wq</groupId>
     <artifactId>qShop</artifactId>
-    <version>2.0-REWORK</version>
+    <version>2.5</version>
 </dependency>
 ```
 
@@ -40,7 +40,7 @@ dependencyResolutionManagement {
 }
 
 dependencies {
-    implementation 'com.github.m7wq:qShop:2.0-REWORK'
+    implementation 'com.github.m7wq:qShop:2.5'
 }
 ```
 
@@ -53,16 +53,67 @@ package dev.m7wq.test;
 
 import dev.m7wq.qshopapi.annotations.*;
 import dev.m7wq.qshopapi.annotations.enums.ClickPurpose;
+import dev.m7wq.qshopapi.annotations.settings.Settings;
+import dev.m7wq.qshopapi.annotations.settings.enums.ShopStatus;
 import dev.m7wq.qshopapi.entity.Item;
+import dev.m7wq.qshopapi.listeners.enums.StatusDisplay;
 import dev.m7wq.qshopapi.main.enums.Capacity;
+import dev.m7wq.qshopapi.listeners.ItemListener;
 import dev.velix.imperat.BukkitSource;
 import dev.velix.imperat.command.Command;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.ObjectStreamException;
+import java.util.Arrays;
+
 
 @Shop(title = "Black Market", capacity = Capacity.SIX_ROWS)
+@Settings(
+        cancelClickEvent = true, // Default -> true
+        status = ShopStatus.SELECTABLE // Default -> DIRECT
+)
 public class MyLovelyShop {
+
+    /**
+     * Selectable Item if ShopStatus is SELECTABLE
+     * @%status% this is built-in placeholder that'd be replaced with item-status (selected, not-selected)
+     * @ItemListener let the developer listen and implement the following events
+     * @StatusDisplay let you define the label of the item status
+     */
+    @Slot(0) // -- Example
+    Item SelectableItem = Item.builder().name("test").lore(Arrays.asList("%status%"))
+            .listener(new ItemListener() {
+                @Override
+                public void onSelect(Player player, Item item) {
+                    player.sendMessage("You selected"+item.getName());
+                }
+
+                @Override
+                public void onUnSelect(Player player, Item item) {
+                    player.sendMessage("You un-selected"+item.getName());
+                }
+            }).display(
+                    StatusDisplay.builder()
+                            .selected("&eSelected") // Default &aSELECTED
+                            .unSelected("&eUn-Selected") // Default &cNOT SELECTED
+                            .notPurchased("&eNone") // Default &cNONE
+                            .build()
+            )
+            .build();
+
+    // ----- OR -----
+
+    @Slot(0)
+    Item directPurchableItem = Item.builder().name("test")
+            .listener(new ItemListener() {
+                @Override
+                public void onClick(Player player, Item item) {
+                    player.sendMessage("You have bought: "+item.getName());
+                }
+            }).build();
+
 
     /**
      * Single slot making
@@ -70,7 +121,6 @@ public class MyLovelyShop {
      */
     @Slot(1)
     Item test = Item.builder().name("item").price(3)
-            .clickable(e -> e.getWhoClicked().sendMessage("HI!!!"))
             .build();
 
     /**
@@ -113,7 +163,7 @@ public class MyLovelyShop {
      */
     @Shop(title = "White Market", capacity = Capacity.ONE_ROW)
     @Clickable(purpose = ClickPurpose.OPEN_SUB_SHOP, forSlot = 3)
-    public static class WhiteMarket {
+    public static class WhiteMarket{
 
         @Slot(1)
         Item test = Item.builder().build();
@@ -137,7 +187,6 @@ package dev.m7wq.test;
 
 import dev.m7wq.qshopapi.ShopAPI;
 import dev.m7wq.qshopapi.entity.Input;
-import dev.m7wq.qshopapi.main.ShopInterface;
 import dev.velix.imperat.BukkitSource;
 import dev.velix.imperat.command.Command;
 import org.bukkit.Bukkit;
@@ -148,16 +197,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
 
+    ShopAPI shopAPI;
+
     @Override
     public void onEnable(){
 
-        ShopAPI shopAPI = new ShopAPI(this);
+        shopAPI = new ShopAPI(this);
 
-        // Registering a shop
-        shopAPI.registerShop(new MyLovelyShop());
+        // Handle Data
+        shopAPI.enable();
+        shopAPI.setSerializer(new MyDataSerializer());
 
-        // Get as inventory
-        Inventory shop = shopAPI.getShop("ShopTitle");
+        // Listener
+        shopAPI.setPurchaseListener(new PlayerPurchaseListener());
 
         // registering command input:-
 
@@ -174,7 +226,7 @@ public class Main extends JavaPlugin {
         // Register the input
         shopAPI.registerInput(
                 "command1",
-                new Input<Command<BukkitSource>>().of(command)
+                Input.of(command)
         );
 
         // Registering Inventory Input:-
@@ -184,7 +236,7 @@ public class Main extends JavaPlugin {
 
 
         // Registering menu input
-        shopAPI.registerInput("menu1", new Input<Inventory>().of(inventory));
+        shopAPI.registerInput("menu1", Input.of(inventory));
 
         // Registering ItemStack input:-
 
@@ -192,48 +244,131 @@ public class Main extends JavaPlugin {
         ItemStack itemStack = new ItemStack(Material.DIAMOND_SWORD);
 
         // registering item input
-        shopAPI.registerInput("myItem",new Input<ItemStack>().of(itemStack));
+        shopAPI.registerInput("myItem",Input.of(itemStack));
 
         // Registering an Edit
         // NOTE: This is built in by the way!!!
         // Edit will be effected in DisplayName & Lore
         shopAPI.registerEdit("%price%",((string, item) -> string.replace("%price%",String.valueOf(item.getPrice()))));
 
+        // Register Purchase Listener
 
-        Bukkit.getPluginManager().registerEvents(new PlayerPurchaseListener(),this);
 
+        //IMPORTANT: THOSE HAVE TO BE AT THE END BECAUSE THE INPUTS HAVE TO BE INITIALIZED
 
+        // Registering a shop
+        shopAPI.registerShop(new MyLovelyShop());
+
+        // Get as inventory (Example) you can explore ShopInterface Object
+        Inventory shop = shopAPI.getShop((shopInterface) -> shopInterface.getTitle().equalsIgnoreCase("LOVELY SHOP"));
+    }
+
+    @Override
+    public void onDisable(){
+        // Handle data
+        shopAPI.disable()
     }
 }
-
 ```
 
 ### Using `PlayerPurchaseEvent`
 
-Built-in event for player purchase event while using `ClickPurpose.DIRECT_PURCHASE`
+Built-in event for player purchase event while using **Direct Purchase**
 
 ```java
-
 package dev.m7wq.test;
 
-import dev.m7wq.qshopapi.payment.PlayerPurchaseEvent;
+import dev.m7wq.qshopapi.listeners.PurchaseListener;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 
-public class PlayerPurchaseListener implements Listener {
+import java.io.File;
 
-    @EventHandler
-    public void onPurchase(PlayerPurchaseEvent event){
+public class PlayerPurchaseListener implements PurchaseListener {
 
-        int price = event.getPrice();
-        Player player = event.getPlayer();
 
-        // Handle your implementation...
+    /**
+     * @param player Who's going to purchase
+     * @param price The price of the sale
+     * @return boolean if purchase has success (true) or failed (false)
+     */
+    @Override
+    public boolean purchase(Player player, int price) {
 
+        // Basic example
+
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("Example");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(),"data.yml"));
+
+        ConfigurationSection section = config.getConfigurationSection("players-coins");
+
+        int coins = section.getInt(player.getName());
+
+        if (coins < price) {
+            player.sendMessage("You need "+price+" to purchase this");
+            return false;
+        }
+
+        section.set(player.getName(), coins-price);
+        player.sendMessage("Bought successfully");
+        return true;
+    }
+}
+```
+
+### Implementing DataSerializer
+
+This is for data-handling to save item status `Selected | UnSelected | notPurchased`
+
+```java
+package dev.m7wq.test;
+
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import dev.m7wq.qshopapi.data.DataSerializer;
+import dev.m7wq.qshopapi.entity.Item;
+import dev.m7wq.qshopapi.listeners.enums.ItemStatus;
+
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+
+public class MyDataSerializer extends DataSerializer {
+
+    // Save it as JSON in your database or file etc...
+    @Override
+    public void serialize(HashMap<String, HashMap<Item, ItemStatus>> map) {
+
+        Gson gson = new Gson();
+
+        String jsonString = gson.toJson(map);
+
+        // your serialize method
+        // TIP: for sql datatype use TEXT not VARCHAR!!
+        // TIP: for mongodb use Document.parse(jsonString)
 
     }
 
+    @Override
+    public HashMap<String, HashMap<Item, ItemStatus>> deserialize() {
+
+        Gson gson = new Gson();
+
+        String json = "deserialize json string"; // your deserialize method
+
+        Type type = new TypeToken<HashMap<String, HashMap<Item, ItemStatus>>>(){}.getType();
+
+        HashMap<String, HashMap<Item, ItemStatus>> map = gson.fromJson(json,type);
+
+        return map;
+
+
+    }
 }
 ```
 
