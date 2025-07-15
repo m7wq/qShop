@@ -1,6 +1,8 @@
 package dev.m7wq.qshopapi.entity;
 
-import dev.m7wq.qshopapi.main.behaviors.Clickable;
+import dev.m7wq.qshopapi.listeners.ItemListener;
+import dev.m7wq.qshopapi.listeners.enums.ItemStatus;
+import dev.m7wq.qshopapi.listeners.enums.StatusDisplay;
 import lombok.Builder;
 import lombok.Data;
 import org.bukkit.Material;
@@ -12,11 +14,15 @@ import java.util.List;
 @Data
 public class Item {
 
-    Clickable clickable;
     String name;
     List<String> lore;
     Material type;
     int price;
     @Nullable int slot;
+    ItemListener listener;
+    StatusDisplay display;
+
+
+
 
 }

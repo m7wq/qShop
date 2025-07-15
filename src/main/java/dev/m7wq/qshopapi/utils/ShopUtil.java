@@ -5,6 +5,8 @@ import dev.m7wq.qshopapi.main.ShopInterface;
 import dev.m7wq.qshopapi.storage.Edits;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -35,10 +37,9 @@ public class ShopUtil {
 
     }
 
-    public Inventory toInventory(ShopInterface shopInterface){
-
-        Inventory inventory = Bukkit.createInventory(null,shopInterface.getCapacity().getSize(),shopInterface.getTitle());
-
+    public void updateShop(Player player, ShopInterface shopInterface){
+        Inventory inventory = player.getOpenInventory().getTopInventory();
+        inventory.clear();
 
         for (Item item : shopInterface.getItems()){
 
@@ -52,8 +53,6 @@ public class ShopUtil {
             inventory.setItem(item.getSlot(),itemStack);
 
         }
-
-        return inventory;
 
 
     }

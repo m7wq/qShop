@@ -92,17 +92,17 @@ public class MyLovelyShop {
 
     // Perform a command
     @Input("command1")
-    @AnnotatedClickable(purpose = ClickPurpose.PERFORM_COMMAND, forSlot = 1)
+    @Clickable(purpose = ClickPurpose.PERFORM_COMMAND, forSlot = 1)
     Command<BukkitSource> command;
 
     // Open an inventory
     @Input("menu1")
-    @AnnotatedClickable(purpose = ClickPurpose.OPEN_INVENTORY, forSlot = 2)
+    @Clickable(purpose = ClickPurpose.OPEN_INVENTORY, forSlot = 2)
     Inventory inventory;
 
     // Purchase an item
     @Input("myItem")
-    @AnnotatedClickable(purpose = ClickPurpose.DIRECT_PURCHASE, forSlot = 3)
+    @Clickable(purpose = ClickPurpose.DIRECT_PURCHASE, forSlot = 3)
     ItemStack item;
 
     /**
@@ -112,8 +112,8 @@ public class MyLovelyShop {
      * And define the slot of the item if you clicked on it open the sub-shop
      */
     @Shop(title = "White Market", capacity = Capacity.ONE_ROW)
-    @AnnotatedClickable(purpose = ClickPurpose.OPEN_SUB_SHOP, forSlot = 3)
-    public static class WhiteMarket{
+    @Clickable(purpose = ClickPurpose.OPEN_SUB_SHOP, forSlot = 3)
+    public static class WhiteMarket {
 
         @Slot(1)
         Item test = Item.builder().build();

@@ -2,15 +2,23 @@ package dev.m7wq.qshopapi.reader;
 
 
 import dev.m7wq.qshopapi.ActionBase;
+import dev.m7wq.qshopapi.ShopAPI;
 import dev.m7wq.qshopapi.annotations.*;
 import dev.m7wq.qshopapi.annotations.enums.ClickPurpose;
+import dev.m7wq.qshopapi.annotations.settings.Settings;
+import dev.m7wq.qshopapi.annotations.settings.entity.ShopSettings;
+import dev.m7wq.qshopapi.annotations.settings.enums.ShopStatus;
 import dev.m7wq.qshopapi.entity.Item;
+import dev.m7wq.qshopapi.listeners.ItemListener;
+import dev.m7wq.qshopapi.listeners.enums.ItemStatus;
 import dev.m7wq.qshopapi.main.ShopInterface;
 import dev.m7wq.qshopapi.main.enums.Capacity;
 import dev.m7wq.qshopapi.payment.PlayerPurchaseEvent;
+import dev.m7wq.qshopapi.storage.Edits;
 import dev.m7wq.qshopapi.storage.Inputs;
 import dev.m7wq.qshopapi.utils.ShopUtil;
 import dev.m7wq.qshopapi.utils.TextHelper;
+import dev.m7wq.test.Main;
 import dev.velix.imperat.BukkitSource;
 import dev.velix.imperat.command.Command;
 import lombok.SneakyThrows;
@@ -24,17 +32,28 @@ import org.bukkit.plugin.Plugin;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class ShopReader implements Readable<ShopInterface> {
+public class ShopReader implements Reader<ShopInterface> {
 
     @SneakyThrows
     @Override
-    public ShopInterface read(Object instance,Class<?> clazz, Inputs inputs, Plugin plugin) {
+    public ShopInterface read(Object instance, Class<?> clazz, ShopAPI api, Plugin plugin) {
+
+        Edits edits = api.getEdits();
+        Inputs inputs = api.getInputs();
 
         if (!clazz.isAnnotationPresent(Shop.class))
             throw new IllegalStateException("Shop class should be annotated with @Shop annotation");
 
-
         Shop shopAnnotation = clazz.getAnnotation(Shop.class);
+
+        if (!clazz.isAnnotationPresent(Settings.class))
+            throw new IllegalStateException("You have to define settings in your shop by putting @Settings Annotation");
+
+        Settings settings = clazz.getAnnotation(Settings.class);
+
+        ShopSettings shopSettings = ShopSettings.builder()
+                .cancelClickEvent(settings.cancelClickEvent())
+                .status(settings.status()).build();
 
         String shopName = shopAnnotation.title();
         shopName = TextHelper.format(shopName);
@@ -93,7 +112,19 @@ public class ShopReader implements Readable<ShopInterface> {
                 .title(shopName)
                 .capacity(capacity)
                 .items(items)
+                .settings(shopSettings)
                 .build();
+
+        if (shopSettings.getStatus()== ShopStatus.SELECTABLE){
+            if (!api.getStorage().containsKey(shopName)){
+
+                HashMap<Item, ItemStatus> map = new HashMap<>();
+
+                items.forEach(item->map.put(item,ItemStatus.NOT_PURCHASED));
+
+                api.getStorage().put(shopName, map);
+            }
+        }
 
 
         // -- FOR PURPOSES --
@@ -117,9 +148,9 @@ public class ShopReader implements Readable<ShopInterface> {
             }
 
             // Handle purposes
-            if (field.isAnnotationPresent(AnnotatedClickable.class)){
+            if (field.isAnnotationPresent(Clickable.class)){
 
-                AnnotatedClickable clickable = field.getAnnotation(AnnotatedClickable.class);
+                Clickable clickable = field.getAnnotation(Clickable.class);
 
                 ClickPurpose purpose = clickable.purpose();
                 int slot = clickable.forSlot();
@@ -137,9 +168,11 @@ public class ShopReader implements Readable<ShopInterface> {
 
                     shopInterface.getItems().forEach(item ->{
                         if (item.getSlot()==slot)
-                            item.setClickable((e)->{
-                                if (e.getWhoClicked() instanceof Player player)
-                                    player.performCommand(command.name());
+                            item.setListener(new ItemListener() {
+                                @Override
+                                public void onClick(Player player, Item item) {
+                                    Bukkit.getServer().dispatchCommand(player,command.name());
+                                }
                             });
                     });
 
@@ -158,12 +191,12 @@ public class ShopReader implements Readable<ShopInterface> {
 
 
 
-                    item.setClickable(e-> {
-                        if (e.getWhoClicked() instanceof Player player) {
+                    item.setListener(new ItemListener() {
+                        @Override
+                        public void onClick(Player player, Item item) {
                             Bukkit.getPluginManager().callEvent(new PlayerPurchaseEvent(player, item.getPrice()));
                             player.getInventory().addItem((ItemStack) sale);
                         }
-
                     });
 
 
@@ -179,13 +212,11 @@ public class ShopReader implements Readable<ShopInterface> {
                     if (!(obj instanceof Inventory))
                         new IllegalStateException("OPEN_INVENTORY field dataType can only be Inventory not "+field.getType());
 
-                    item.setClickable(e->{
-
-                        if (e.getWhoClicked() instanceof Player player){
+                    item.setListener(new ItemListener() {
+                        @Override
+                        public void onClick(Player player, Item item) {
                             player.openInventory((Inventory) obj);
                         }
-
-
                     });
 
 
@@ -204,16 +235,16 @@ public class ShopReader implements Readable<ShopInterface> {
         for (Class<?> subClazz : clazz.getClasses()){
 
             if (subClazz.isAnnotationPresent(Shop.class)){
-                if (subClazz.isAnnotationPresent(AnnotatedClickable.class)){
+                if (subClazz.isAnnotationPresent(Clickable.class)){
 
-                    AnnotatedClickable annotation = subClazz.getAnnotation(AnnotatedClickable.class);
+                    Clickable annotation = subClazz.getAnnotation(Clickable.class);
 
                     ClickPurpose purpose = annotation.purpose();
 
                     if (purpose != ClickPurpose.OPEN_SUB_SHOP)
                         continue;
 
-                    ShopInterface subShop = read(instance,subClazz, inputs, plugin);
+                    ShopInterface subShop = read(instance,subClazz, api, plugin);
 
                     subShops.add(subShop);
 
@@ -223,9 +254,10 @@ public class ShopReader implements Readable<ShopInterface> {
 
                         if (item.getSlot()==slot){
 
-                            item.setClickable(e->{
-                                if (e.getWhoClicked() instanceof Player plr){
-                                    plr.openInventory(ShopUtil.toInventory(subShop));
+                            item.setListener(new ItemListener() {
+                                @Override
+                                public void onClick(Player player, Item item) {
+                                    player.openInventory(ShopUtil.toInventory(subShop,edits));
                                 }
                             });
                         }

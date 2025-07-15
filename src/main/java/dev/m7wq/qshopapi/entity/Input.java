@@ -18,8 +18,6 @@ public class Input {
 
     public static Input of(Object value){
 
-        Command command = Command.create("lol").build();
-
         if (!(value instanceof Command<?>)
                 && !(value instanceof Inventory)
                 && !(value instanceof ItemStack)

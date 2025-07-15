@@ -11,7 +11,8 @@ import java.util.List;
 public class TextHelper {
 
     public String format(String str){
-        return ChatColor.translateAlternateColorCodes('&',str);
+
+        return str==null ? "" : ChatColor.translateAlternateColorCodes('&',str);
     }
 
     public List<String> format(List<String> stringList){

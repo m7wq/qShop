@@ -3,7 +3,6 @@ package dev.m7wq.test;
 
 import dev.m7wq.qshopapi.ShopAPI;
 import dev.m7wq.qshopapi.entity.Input;
-import dev.m7wq.qshopapi.main.ShopInterface;
 import dev.velix.imperat.BukkitSource;
 import dev.velix.imperat.command.Command;
 import org.bukkit.Bukkit;
@@ -14,10 +13,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
 
+    ShopAPI shopAPI;
+
     @Override
     public void onEnable(){
 
-        ShopAPI shopAPI = new ShopAPI(this);
+        shopAPI = new ShopAPI(this);
+
+        // Handle Data
+        shopAPI.enable();
 
         // registering command input:-
 
@@ -59,8 +63,8 @@ public class Main extends JavaPlugin {
         // Edit will be effected in DisplayName & Lore
         shopAPI.registerEdit("%price%",((string, item) -> string.replace("%price%",String.valueOf(item.getPrice()))));
 
+        // Register Purchase Listener
 
-        Bukkit.getPluginManager().registerEvents(new PlayerPurchaseListener(),this);
 
         //IMPORTANT: THOSE HAVE TO BE AT THE END BECAUSE THE INPUTS HAVE TO BE INITIALIZED
 
@@ -69,5 +73,10 @@ public class Main extends JavaPlugin {
 
         // Get as inventory (Example) you can explore ShopInterface Object
         Inventory shop = shopAPI.getShop((shopInterface) -> shopInterface.getTitle().equalsIgnoreCase("LOVELY SHOP"));
+    }
+
+    @Override
+    public void onDisable(){
+
     }
 }
