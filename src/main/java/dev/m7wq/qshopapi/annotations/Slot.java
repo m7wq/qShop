@@ -1,7 +1,7 @@
 package dev.m7wq.qshopapi.annotations;
 
 import com.avaje.ebean.validation.NotNull;
-import dev.m7wq.qshopapi.main.behaviors.Clickable;
+
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
