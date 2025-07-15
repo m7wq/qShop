@@ -21,8 +21,9 @@ import java.util.HashMap;
 
 public class InventoryClickListener implements Listener {
 
-    public InventoryClickListener(Shops shops) {
+    public InventoryClickListener(Shops shops, ShopAPI api) {
         this.shops = shops;
+        this.api = api;
     }
 
     Shops shops;

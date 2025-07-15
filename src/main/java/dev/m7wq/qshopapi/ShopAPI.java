@@ -49,7 +49,7 @@ public class ShopAPI {
         storage = new DataStorage();
 
         this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(new InventoryClickListener(getShops()),plugin);
+        plugin.getServer().getPluginManager().registerEvents(new InventoryClickListener(getShops(),this),plugin);
 
         // Built-in edits
         edits.getEditable().put("%status%",(text,item)->{
