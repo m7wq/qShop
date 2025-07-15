@@ -1,7 +1,6 @@
 package dev.m7wq.test;
 
 import dev.m7wq.qshopapi.listeners.PurchaseListener;
-import dev.m7wq.qshopapi.payment.PlayerPurchaseEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,10 +31,13 @@ public class PlayerPurchaseListener implements PurchaseListener {
 
         int coins = section.getInt(player.getName());
 
-        if (coins < price)
+        if (coins < price) {
+            player.sendMessage("You need "+price+" to purchase this");
             return false;
+        }
 
         section.set(player.getName(), coins-price);
+        player.sendMessage("Bought successfully");
         return true;
     }
 }

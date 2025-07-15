@@ -13,7 +13,6 @@ import dev.m7wq.qshopapi.listeners.ItemListener;
 import dev.m7wq.qshopapi.listeners.enums.ItemStatus;
 import dev.m7wq.qshopapi.main.ShopInterface;
 import dev.m7wq.qshopapi.main.enums.Capacity;
-import dev.m7wq.qshopapi.payment.PlayerPurchaseEvent;
 import dev.m7wq.qshopapi.storage.Edits;
 import dev.m7wq.qshopapi.storage.Inputs;
 import dev.m7wq.qshopapi.utils.ShopUtil;
@@ -194,8 +193,9 @@ public class ShopReader implements Reader<ShopInterface> {
                     item.setListener(new ItemListener() {
                         @Override
                         public void onClick(Player player, Item item) {
-                            Bukkit.getPluginManager().callEvent(new PlayerPurchaseEvent(player, item.getPrice()));
-                            player.getInventory().addItem((ItemStack) sale);
+                            boolean purchased = api.getPurchaseListener().purchase(player,item.getPrice());
+                            if (purchased)
+                                player.getInventory().addItem((ItemStack) sale);
                         }
                     });
 

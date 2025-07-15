@@ -22,6 +22,10 @@ public class Main extends JavaPlugin {
 
         // Handle Data
         shopAPI.enable();
+        shopAPI.setSerializer(new MyDataSerializer());
+
+        // Listener
+        shopAPI.setPurchaseListener(new PlayerPurchaseListener());
 
         // registering command input:-
 
