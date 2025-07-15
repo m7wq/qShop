@@ -81,6 +81,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable(){
-
+        // Handle data
+        shopAPI.disable();
     }
 }
