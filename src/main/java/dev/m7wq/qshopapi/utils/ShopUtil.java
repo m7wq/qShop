@@ -37,19 +37,19 @@ public class ShopUtil {
 
     }
 
-    public void updateShop(Player player, ShopInterface shopInterface){
+    public void updateShop(Player player, ShopInterface shopInterface, Edits edits){
         Inventory inventory = player.getOpenInventory().getTopInventory();
         inventory.clear();
 
         for (Item item : shopInterface.getItems()){
 
+            ItemTextHelper itemTextHelper = new ItemTextHelper(item);
+
             ItemStack itemStack = new ItemStack(item.getType());
             ItemMeta meta = itemStack.getItemMeta();
-            meta.setDisplayName(TextHelper.format(item.getName()));
-            meta.setLore(TextHelper.format(item.getLore()));
-
+            meta.setDisplayName(itemTextHelper.format(item.getName(), edits));
+            meta.setLore(itemTextHelper.format(item.getLore(), edits));
             itemStack.setItemMeta(meta);
-
             inventory.setItem(item.getSlot(),itemStack);
 
         }

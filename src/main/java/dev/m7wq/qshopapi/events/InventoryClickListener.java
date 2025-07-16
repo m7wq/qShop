@@ -88,12 +88,13 @@ public class InventoryClickListener implements Listener {
                                 statusMap.put(item, ItemStatus.UN_SELECTED);
                                 item.getListener().onUnSelect(player,item);
                             } else if (itemStatus == ItemStatus.UN_SELECTED) {
+                                statusMap.put(item,ItemStatus.SELECTED);
                                 item.getListener().onUnSelect(player,item);
 
 
                             }
 
-                            ShopUtil.updateShop(player,shop); // refresh the shop
+                            ShopUtil.updateShop(player,shop,api.getEdits()); // refresh the shop
 
 
                         }
