@@ -96,9 +96,9 @@ public class MyLovelyShop {
                 }
             }).display(
                     StatusDisplay.builder()
-                            .selected("&eSelected") // Default &aSELECTED
-                            .unSelected("&eUn-Selected") // Default &cNOT SELECTED
-                            .notPurchased("&eNone") // Default &cNONE
+                            .selected("&eSelected")
+                            .unSelected("&eUn-Selected")
+                            .notPurchased("&eNone")
                             .build()
             )
             .build();
