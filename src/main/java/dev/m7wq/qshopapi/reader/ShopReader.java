@@ -123,6 +123,12 @@ public class ShopReader implements Reader<ShopInterface> {
 
                 api.getStorage().put(shopName, map);
             }
+        } else if (shopSettings.getStatus()==ShopStatus.DIRECT) {
+
+            if (api.getStorage().containsKey(shopName)){
+                api.getStorage().remove(shopName);
+            }
+
         }
 
 
