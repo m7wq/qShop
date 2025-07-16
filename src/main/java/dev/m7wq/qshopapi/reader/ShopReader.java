@@ -17,7 +17,6 @@ import dev.m7wq.qshopapi.storage.Edits;
 import dev.m7wq.qshopapi.storage.Inputs;
 import dev.m7wq.qshopapi.utils.ShopUtil;
 import dev.m7wq.qshopapi.utils.TextHelper;
-import dev.m7wq.test.Main;
 import dev.velix.imperat.BukkitSource;
 import dev.velix.imperat.command.Command;
 import lombok.SneakyThrows;
