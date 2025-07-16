@@ -16,7 +16,7 @@ public class Main extends JavaPlugin {
     ShopAPI shopAPI;
 
 
-    public void onEnable(){
+    public void onPluignEnable(){
 
         shopAPI = new ShopAPI(this);
 
@@ -80,7 +80,7 @@ public class Main extends JavaPlugin {
     }
 
 
-    public void onDisable(){
+    public void onPluginDisable(){
         // Handle data
         shopAPI.disable();
     }
