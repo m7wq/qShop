@@ -22,7 +22,7 @@ Add this to your `pom.xml`:
 <dependency>
     <groupId>com.github.m7wq</groupId>
     <artifactId>qShop</artifactId>
-    <version>2.6</version>
+    <version>3.1</version>
 </dependency>
 ```
 
@@ -40,7 +40,7 @@ dependencyResolutionManagement {
 }
 
 dependencies {
-    implementation 'com.github.m7wq:qShop:2.6'
+    implementation 'com.github.m7wq:qShop:3.1'
 }
 ```
 
