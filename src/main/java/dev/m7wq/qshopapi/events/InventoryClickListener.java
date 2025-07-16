@@ -89,7 +89,7 @@ public class InventoryClickListener implements Listener {
                                 item.getListener().onUnSelect(player,item);
                             } else if (itemStatus == ItemStatus.UN_SELECTED) {
                                 statusMap.put(item,ItemStatus.SELECTED);
-                                item.getListener().onUnSelect(player,item);
+                                item.getListener().onSelect(player,item);
 
 
                             }
